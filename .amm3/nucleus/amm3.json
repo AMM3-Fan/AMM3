@@ -1,0 +1,248 @@
+{
+  "model_id": "amm3-kernel",
+  "description": "AMM3 Core Kernel Configuration",
+  "base_model": "llama3.2:3b",
+  "capabilities": [
+    "reasoning",
+    "coding",
+    "planning",
+    "execution"
+  ],
+  "roles": {
+    "available": [
+      "user",
+      "assistant",
+      "system",
+      "tool"
+    ],
+    "default": "user"
+  },
+  "message_attributes": {
+    "name": {
+      "format": "[{name}]"
+    },
+    "priority": {
+      "format": "<priority>{priority}</priority>"
+    },
+    "significance": {
+      "format": "<significance>{significance}</significance>"
+    }
+  },
+  "formatting": {
+    "attribute_order": [
+      "name",
+      "priority",
+      "significance"
+    ],
+    "separator": " "
+  },
+  "inference": {
+    "engine": "ollama",
+    "parameters": {
+      "temperature": 0.7,
+      "top_p": 0.9,
+      "num_predict": 4096
+    }
+  },
+  "available_models": {
+    "gemini": {
+      "type": "gemini",
+      "trust": "remote"
+    },
+    "claude": {
+      "type": "claude",
+      "trust": "remote"
+    },
+    "llama3.2:3b": {
+      "type": "ollama",
+      "trust": "local"
+    },
+    "pure": {
+      "type": "ollama",
+      "trust": "local"
+    },
+    "llama3.2": {
+      "type": "ollama",
+      "trust": "local"
+    },
+    "qwen3": {
+      "type": "ollama",
+      "trust": "local"
+    }
+  },
+  "trust": {
+    "_comment": "Security map \u2014 single source of truth for TrustProtocol",
+    "tiers": {
+      "local": "Ollama models. Highest trust. Auto-allow safe commands.",
+      "remote": "Known external agents (gemini, claude). Confirm most, block sensitive.",
+      "guest": "Unknown/unverified models. Sandbox-only."
+    },
+    "sensitive_files": {
+      "_comment": "Files blocked from ALL tiers \u2014 never touched by any model",
+      "universal": [
+        ".env",
+        ".env.gpg",
+        "credentials.json"
+      ],
+      "keys": [
+        "id_rsa",
+        "id_ed25519",
+        "id_ecdsa",
+        "id_dsa"
+      ],
+      "remote_blocked": [
+        ".zsh_history",
+        ".bash_history",
+        ".sh_history",
+        ".zshrc",
+        ".bashrc",
+        ".profile",
+        ".zshenv",
+        "id_rsa",
+        "id_ed25519",
+        "id_ecdsa",
+        "id_dsa",
+        "known_hosts",
+        "authorized_keys",
+        "config"
+      ],
+      "write_blocked": [
+        ".env",
+        ".env.gpg",
+        ".bashrc",
+        ".zshrc",
+        ".profile",
+        ".bash_history",
+        ".zsh_history",
+        ".ssh/authorized_keys",
+        ".ssh/config"
+      ]
+    },
+    "sensitive_dirs": {
+      "_comment": "Directories remote models cannot enter \u2014 relative to $HOME",
+      "remote_blocked": [
+        ".ssh",
+        ".gnupg",
+        ".aws",
+        ".config/gcloud"
+      ]
+    },
+    "blocked_paths": {
+      "_comment": "System paths \u2014 confirm-high for any access",
+      "system": [
+        "/etc",
+        "/var",
+        "/usr",
+        "/bin",
+        "/sbin",
+        "/System",
+        "/Library",
+        "/private"
+      ]
+    },
+    "blocked_commands": {
+      "_comment": "Substring matches \u2014 blocked for ALL tiers",
+      "universal": [
+        "rm -rf /",
+        "rm -rf /*",
+        "mkfs",
+        "dd if=",
+        ":(){",
+        "fork bomb",
+        "> /dev/sda",
+        "chmod -R 777 /",
+        "curl | sh",
+        "curl | bash",
+        "wget | sh",
+        "wget | bash",
+        "killall",
+        "pkill",
+        "kill -9",
+        "shutdown",
+        "reboot",
+        "launchctl",
+        "systemctl"
+      ]
+    },
+    "destructive_patterns": {
+      "_comment": "Regex patterns \u2014 blocked for ALL tiers",
+      "patterns": [
+        "\\brm\\b.*-[rR]",
+        "\\brm\\b.*\\*",
+        ">\\s*/dev/",
+        "\\bformat\\b",
+        "\\bmkfs\\b",
+        "\\bdd\\b\\s+if="
+      ]
+    },
+    "network_commands": [
+      "curl",
+      "wget",
+      "ssh",
+      "scp",
+      "rsync",
+      "nc ",
+      "netcat"
+    ],
+    "auto_allow": {
+      "_comment": "Zero-risk commands \u2014 auto-allow for local tier only",
+      "commands": [
+        "clear",
+        "ls",
+        "pwd",
+        "whoami",
+        "date",
+        "uname",
+        "sw_vers",
+        "hostname",
+        "echo",
+        "printf",
+        "uptime"
+      ]
+    },
+    "read_only_commands": [
+      "cat",
+      "head",
+      "tail",
+      "less",
+      "wc",
+      "file",
+      "which",
+      "where",
+      "type",
+      "df",
+      "du",
+      "free",
+      "top",
+      "ps",
+      "find",
+      "locate",
+      "grep",
+      "rg",
+      "ag",
+      "ack"
+    ],
+    "guest": {
+      "sandbox": "~/.amm3/guest",
+      "allowed_commands": [
+        "ls",
+        "pwd",
+        "cat",
+        "head",
+        "tail",
+        "wc",
+        "echo",
+        "date"
+      ],
+      "allowed_tools": [
+        "run",
+        "read",
+        "write",
+        "navigate",
+        "check",
+        "report"
+      ]
+    }
+  },
+  "system_prompt": "AMM3 is an AI kernel on macOS (arm64, zsh). Emit <tools/> to receive the full tool list."
+}

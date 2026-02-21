@@ -1,0 +1,3 @@
+#!/bin/bash
+source ~/.amm3/.venv/bin/activate
+python ~/.amm3/AMM3.py "$@"
